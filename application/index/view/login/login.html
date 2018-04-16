@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IM 登录</title>
+	<script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
+</head>
+<body>
+<h1>IM 登录</h1>
+<div class="">
+	<form action="login/doLogin" method="post">
+		<p><input type="text" name="user_name" id="user_name"></p>
+		<p><input type="password" name="user_pwd" id="user_pwd"></p>
+		<p><input type="button" value="提交" id="login_btn"></p>
+	</form>
+</div>
+</body>
+
+<script>
+
+    $('#user_pwd').keydown(function(e){
+        if(e.keyCode==13){
+            $('#login_btn').click();
+        }
+    })
+
+    $('#login_btn').on('click', function(){
+		
+		var ajax_url = "login/doLogin";
+		var query = new Object();
+		query.user_name = $('#user_name').val();
+		query.user_pwd = $('#user_pwd').val();
+		
+		$.ajax({
+			url: ajax_url,
+			type: 'post',
+			data: query,
+			dataType: 'json',
+			success: function (res) {
+				if(res.code){
+					//location.href="{:Url('main/index/index')}";
+					location.href = "/";
+				}else{
+					alert(res.message);
+				}
+			},
+			error:function(request, msg, e){
+				alert(msg);
+			}
+		});
+		
+    })
+</script>
+
+</html>

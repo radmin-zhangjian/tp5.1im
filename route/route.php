@@ -14,7 +14,18 @@ Route::get('think', function () {
 });
 
 Route::get('hello/:name', 'index/hello');
-// Route::get('home', 'index/index');
+Route::get('/', 'index/index/index');
+Route::get('message', 'index/index/message');
+Route::get('login', 'index/login/login');
+Route::post('login/doLogin', 'index/login/doLogin');
+Route::get('logout', 'index/login/logout');
+
+Route::get('user/list', 'index/userIm/userList');
+Route::get('user/add', 'index/userIm/userAdd');
+Route::post('user/save', 'index/userIm/userSave');
+Route::get('user/edit', 'index/userIm/userEdit');
+Route::post('user/update', 'index/userIm/userUpdate');
+Route::get('user/delete', 'index/userIm/userDel');
 
 return [
 

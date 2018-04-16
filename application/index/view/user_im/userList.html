@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IM 列表</title>
+	<script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
+	<style>
+	.pagination {margin:10px;paddint:5px;list-style:none;}
+	.pagination li{float:left;padding:2px 3px;}
+	.pagination li.active{color:red;}
+	table tr td{padding:2px 10px;}
+	</style>
+</head>
+<body>
+<h1>IM 列表</h1>
+<h4><a href="/user/add">新增</a></h4>
+<table class="">
+	{foreach $userList as $key=>$val}
+		<tr>
+			<td>{$val.id}</td>
+			<td>{$val.user_name}</td>
+			<td>
+				<a href="/user/edit/id/{$val.id}">修改</a>
+			</td>
+			<td>
+			{if $val.id != 1}
+				<a href="javascript:" onclick="user_del('{$val.id}')">删除</a>
+			{/if}
+			</td>
+		</tr>
+	{/foreach}
+</table>
+<div>{$page|raw}</div>
+</body>
+<script>
+
+    function user_del(id) 
+	{
+		var ajax_url = "/user/delete";
+		var query = new Object();
+		query.id = id;
+		
+		$.ajax({
+			url: ajax_url,
+			type: 'get',
+			data: query,
+			dataType: 'json',
+			success: function (res) {
+				if(res.code){
+					alert(res.message);
+					location.href = "/user/list";
+				}else{
+					alert(res.message);
+				}
+			},
+			error:function(request, msg, e){
+				alert(msg);
+			}
+		});
+		
+    }
+</script>
+</html>

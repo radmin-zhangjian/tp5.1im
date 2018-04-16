@@ -6,7 +6,6 @@
 </head>
 <body>
 <h1>IM Work</h1>
-<h4><a href="logout">退出</a></h4>
 <select name="u_name" id="u_name">
 <option value="all">全部</option>
 {foreach $userList as $val}
@@ -30,7 +29,8 @@
         ws.onopen = onopen;
         ws.onmessage = onmessage;
 		ws.onclose = function() {
-			console.log("连接关闭");
+			console.log("连接关闭，定时重连");
+			connect();
 		};
 		ws.onerror = function() {
 			console.log("出现错误");
@@ -48,7 +48,7 @@
 				name = name.replace(/"/g, '\\"');
 			}
 		}
-		var login_data = '{"type":"login", "client_name":"'+name+ '_Q' +'", "room_id":"room_1"}';
+		var login_data = '{"type":"login", "client_name":"'+name+ '_H' +'", "room_id":"room_1"}';
 		console.log(login_data);
 		ws.send(login_data);
 	}
@@ -71,18 +71,14 @@
 			// ping
 			case 'ping':
 				ws.send('{"type":"pong"}');
-				break;
+				break;;
 			// send
 			case 'say':
 				document.getElementById("content").innerHTML += "<h2>" + data['data'] + "</h2>";
-				break;
+				break;;
 			// open
 			case 'login':
 				document.getElementById("content").innerHTML += "<h2>" + data['data'] + "</h2>";
-				break;
-			// lonout
-			case 'logout':
-				ws.close();
 		}
 	}
 	

@@ -2,23 +2,29 @@
 namespace app\push\controller;
 
 use think\worker\Server;
+use think\worker\Lib\Timer;
+use think\worker\Protocols\Http;
+use think\Db;
 use think\facade\Cache;
+use think\facade\Session;
 
 class Worker extends Server
 {
+	// socket 地址
     // protected $socket = 'websocket://www.workerman.com:2346';
     protected $socket = 'websocket://123.56.192.63:2346';
+	// 进程数
+	protected $processes = 1;
+	// 新增加一个属性，用来保存uid到connection的映射(uid是用户id或者客户端唯一标识)
+	protected $uidConnections = array();
+	// 进程名称
+	protected $name = 'MyWebsocketWorker';
+	// 自增ID
     protected $cnt = 0;
+	// 绑定的用户
+    protected $clients = [];
 	
-    public function initialize()
-    {
-        parent::initialize();
-		// ====这里进程数必须必须必须设置为1====
-		$this->worker->count = 1;
-		// 新增加一个属性，用来保存uid到connection的映射(uid是用户id或者客户端唯一标识)
-		$this->worker->uidConnections = array();
-    }
-
+	
     /**
      * 收到信息
      * @param $connection
@@ -32,6 +38,9 @@ class Worker extends Server
             return ;
         }
 		
+		// 获取IP
+		$ip = $connection->getRemoteIp();
+		
 		// 根据类型执行不同的业务
         switch ($message_data['type']) {
             // 客户端回应服务端的心跳
@@ -39,34 +48,41 @@ class Worker extends Server
 
                 return ;        
             
-            // 客户端登录 message格式: {type:login, client_name:xx, room_id:1}
+            // 客户端登录 message格式: {type:login, client_name:xx, room_id:room_1}
             case 'login':
             	
                 // 判断当前客户端是否已经验证,即是否设置了uid
+                // if (!isset($connection->uid) && !array_key_exists($message_data['client_name'], $this->clients)) {
                 if (!isset($connection->uid)) {
+					
 					// 绑定用户
-					if ($message_data['client_name'] == '游客') {
-						$connection->uid = '游客' . ++$this->cnt;
+					if ($message_data['client_name'] == '游客' || $message_data['client_name'] == '游客') {
+						$connection->uid = $message_data['client_name'] . ++$this->cnt;
 					} else {
 						$connection->uid = $message_data['client_name'];
 					}
+					
 					$this->worker->uidConnections[$connection->uid] = $connection;
-					$message = json_encode(['type' => 'login', 'data' => $message_data['client_name'].'登陆成功']);
-					$this->broadcast($message);
+					$this->clients[$connection->uid] = $ip;
+					$message = json_encode(['type' => 'login', 'data' => '用户['.$connection->uid.'] 登陆成功']);
+					$this->sendMessageByUid($connection->uid, $message); // 给自己
+					// $this->broadcast($message); // 给所有人
+					
 			    }
 				break;
 
             case 'say':
 				
 				// 广播对象
-				$name = $message_data['client_name'];
-				if ($connection->uid == $name || empty($name) || $name == null || !$name) {
+				$userName = $message_data['client_name'];
+				if ($connection->uid == $userName || empty($userName) || $userName == null || !$userName) {
 					$recvUid = 'all';
 				} else {
-					$recvUid = $message_data['client_name'];
+					$recvUid = $userName . '_H';
 				}
 				// send 内容
-				$message = json_encode(['type' => 'say', 'data' => $message_data['data']]);
+				$msg = '[' . date('Y-m-d H:i:s', time()) . '] @' . $connection->uid . ' 说：' .$message_data['data'];
+				$message = json_encode(['type' => 'say', 'data' => $msg]);
 				
 				if ($recvUid == 'all') {
 					// 全局广播
@@ -89,20 +105,6 @@ class Worker extends Server
      */
     public function onConnect($connection)
     {
-		// if(!isset($connection->uid))
-		// {
-			// // 没验证的话把第一个包当做uid（这里为了方便演示，没做真正的验证）
-			// $connection->uid = ++$this->cnt;
-			// /* 保存uid到connection的映射，这样可以方便的通过uid查找connection，
-			 // * 实现针对特定uid推送数据
-			 // */
-			// $this->worker->uidConnections[$connection->uid] = $connection;
-			// // return $connection->send('login success, your uid is ' . $connection->uid);
-			// foreach ($this->worker->connections as $conn) {
-				// $conn->send("用户[{$connection->uid}] 已上线");
-			// }
-		// }
-		
 		$message = json_encode(['type' => 'say', 'data' => '连线成功...']);
 		$connection->send($message);
     }
@@ -113,15 +115,14 @@ class Worker extends Server
      */
     public function onClose($connection)
     {
-		if(isset($connection->uid))
-		{
+		if (isset($connection->uid)) {
 			// 连接断开时删除映射
 			unset($this->worker->uidConnections[$connection->uid]);
 		}
-		foreach ($this->worker->connections as $conn) {
-			$message = json_encode(['type' => 'say', 'data' => '用户['.$connection->uid.'] 已登出']);
-			$conn->send($message);
-		}
+		// foreach ($this->worker->connections as $conn) {
+			// $message = json_encode(['type' => 'say', 'data' => '用户['.$connection->uid.'] 已登出']);
+			// $conn->send($message);
+		// }
     }
 
     /**
@@ -141,7 +142,9 @@ class Worker extends Server
      */
     public function onWorkerStart($worker)
     {
-		
+		$worker->name = 'MyWebsocketWorker';
+		// $this->redis = Cache::store('redis')->handler();
+		// $this->redis->sadd('userList', 'room_1');
     }
 	
 	/**
