@@ -81,8 +81,11 @@ class Worker extends Server
 					$recvUid = $userName . '_H';
 				}
 				// send 内容
-				$msg = '[' . date('Y-m-d H:i:s', time()) . '] @' . $connection->uid . ' 说：' .$message_data['data'];
-				$message = json_encode(['type' => 'say', 'data' => $msg]);
+				$uName = $connection->uid;
+				// $msg = '[' . date('Y-m-d H:i:s', time()) . '] @' . $connection->uid . ' 说：' .$message_data['data'];
+				$msg = $message_data['data'];
+				$date = date('Y-m-d H:i:s', time());
+				$message = json_encode(['type' => 'say', 'uName' => $uName, 'data' => $msg, 'time' => $date]);
 				
 				if ($recvUid == 'all') {
 					// 全局广播
@@ -105,7 +108,7 @@ class Worker extends Server
      */
     public function onConnect($connection)
     {
-		$message = json_encode(['type' => 'say', 'data' => '连线成功...']);
+		$message = json_encode(['type' => 'login', 'data' => '连线成功...']);
 		$connection->send($message);
     }
 
@@ -120,7 +123,7 @@ class Worker extends Server
 			unset($this->worker->uidConnections[$connection->uid]);
 		}
 		// foreach ($this->worker->connections as $conn) {
-			// $message = json_encode(['type' => 'say', 'data' => '用户['.$connection->uid.'] 已登出']);
+			// $message = json_encode(['type' => 'login', 'data' => '用户['.$connection->uid.'] 已登出']);
 			// $conn->send($message);
 		// }
     }

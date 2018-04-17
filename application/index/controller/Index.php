@@ -10,6 +10,7 @@ class Index extends BaseController
 		$userList = session('userList') ? session('userList') : [];
 		$this->assign('userList', $userList);
 		$this->assign('user_name', $this->sessionInfo['user_name']);
+		$this->assign('user_id', $this->sessionInfo['id']);
 		return $this->fetch();
     }
 	
@@ -18,6 +19,7 @@ class Index extends BaseController
 		$userList = session('userList') ? session('userList') : [];
 		$this->assign('userList', $userList);
 		$this->assign('user_name', $this->sessionInfo['user_name']);
+		$this->assign('user_id', $this->sessionInfo['id']);
 		return $this->fetch();
     }
 	

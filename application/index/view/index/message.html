@@ -1,20 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>IM Work</title>
+{include file='public@inc:header' /}
 </head>
 <body>
-<h1>IM Work</h1>
-<select name="u_name" id="u_name">
-<option value="all">全部</option>
-{foreach $userList as $val}
-<option value="{$val}">{$val}</option>
-{/foreach}
-</select>
+
+<div class="message">
+	<h1>IM Message!</h1>
+	<div class="message_li">
+		<ul id="content">
+			<li class="client">MESSAGE</li>
+		</ul>
+	</div>
+</div>
+
+<div style="display:none">
 <input type="text" id="msg">
 <button type="button" id="send">send</button>
-<div id="content"></div>
+<div id="content2"></div>
+<input type="button" value=" 点击 " id="trig" />
+<input type="button" value=" 循环 " id="circulation" /><br /><br />
+<input type="button" value=" 停止 " id="clear" /><br /><br />
+</div>
+
 </body>
 
 <script type="text/javascript">
@@ -25,7 +30,8 @@
 	function connect() {
 		//ws = new WebSocket("ws://www.workerman.com:2346");
 		ws = new WebSocket("ws://123.56.192.63:2346");
-        document.getElementById("send").onclick = onsend;
+        //document.getElementById("send").onclick = onsend;
+		$("#send").on('click', onsend);
         ws.onopen = onopen;
         ws.onmessage = onmessage;
 		ws.onclose = function() {
@@ -74,17 +80,50 @@
 				break;;
 			// send
 			case 'say':
-				document.getElementById("content").innerHTML += "<h2>" + data['data'] + "</h2>";
+				value = '<li class="client">';
+				value += '[' + data['time'] + '] @' + data['uName'] + '说:<br>';
+				value += data['data'];
+				value += '</li>';
+				$('#content').prepend(value);
+				onsound();
+				//document.getElementById("content").innerHTML += '<li class="client">' + data['data'] + '</li>';
 				break;;
 			// open
 			case 'login':
-				document.getElementById("content").innerHTML += "<h2>" + data['data'] + "</h2>";
+				value = '<li class="client">' + data['data'] + '</li>';
+				$('#content').prepend(value);
+				//document.getElementById("content").innerHTML += '<li class="client">' + data['data'] + '</li>';
 		}
 	}
 	
-	window.onload = function () {
-        connect();
-    };
+	// 提示音
+	function onsound() 
+	{
+		$('#chatAudio')[0].play();
+	}
+	
+	$(function(){
+	    $('<audio id="chatAudio"><source src="/static/sound/8855.mp3" type="audio/mpeg"></audio>').appendTo('body');
+	    $("#trig").on('click', onsound);
+		connect();
+	});
+	
+	
+	//循环播放
+    /*$(function(){
+        $('<audio id="chatAudio"><source src="/static/sound/8855.mp3" type="audio/mpeg"></audio>').appendTo('body');
+        var circulation;
+        //计时器
+        $("#circulation").click(function(){
+            circulation = setInterval("$('#chatAudio')[0].play()", 1000); 
+            return true; 
+        });
+        //清除计时器
+        $("#clear").click(function(){
+            clearInterval(circulation);
+        }); 
+    });*/
+	
 </script>
 
 </html>

@@ -1,10 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>IM Work</title>
+{include file='public@inc:header' /}
 </head>
 <body>
+
+<h1 class="tit" id="liuyan"><img class="mt70 mb70" src="/static/images/1-7.png"/></h1>
+	<div class="container cf form00">
+		<div class="fl"><img src="/static/images/ll_17.jpg" alt="" style="float: right;">
+		</div>
+		<form class="center" action="" method="post" onsubmit="return false;">
+			<p>
+				<label for="">占卜：</label>
+				<textarea name="msg" id="msg" placeholder="请输入您的占卜信息" cols="30" rows="10"></textarea>
+			</p>
+			<input type="submit" value="" id="send">
+        </form>
+	</div>
+	<p class="container">&nbsp;</p>
+
+<?php /**
 <h1>IM Work</h1>
 <h4><a href="logout">退出</a></h4>
 <select name="u_name" id="u_name">
@@ -15,7 +27,15 @@
 </select>
 <input type="text" id="msg">
 <button type="button" id="send">send</button>
-<div id="content"></div>
+*/?>
+
+<h4 style="text-align:center;">
+	<a href="logout">退出</a>
+	{if $user_name == 'admin' && $user_id == 1}
+	<a href="user/list">管理</a>
+	{/if}
+</h4>
+<div id="content" style="text-align:center;"></div>
 </body>
 
 <script type="text/javascript">
