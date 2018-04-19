@@ -1,4 +1,8 @@
-﻿body{width: 100%;font-family: "microsoft yahei";background: #38a2cc;}
+﻿body{
+	width: 100%; 
+	font-family: "microsoft yahei";
+	overflow: hidden;
+	}
 .clear{clear: both;}
 a{text-decoration: none;}
 .container{width: 100%;margin: 0 auto;}

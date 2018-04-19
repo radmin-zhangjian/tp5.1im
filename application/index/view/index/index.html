@@ -2,6 +2,7 @@
 </head>
 <body>
 
+	<img src="/static/images/ous.jpg"/ class="image">
 	<form class="center" action="" method="post" onsubmit="return false;">
 		<p><label for="">占卜：</label><textarea name="msg" id="msg" placeholder="请输入您的联系信息" cols="30" rows="10"></textarea></p>
 		<button type="button" class="btn" id="send">提交</button>
@@ -15,15 +16,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">提交成功</h4>
+        <h4 class="modal-title" id="myModalLabel">占卜成功</h4>
       </div>
     </div>
   </div>
-</div>	
-
-<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
-<script src="/static/js/modal.min.js"></script>
-
+</div>
 
 <?php /**
 <h1>IM Work</h1>
@@ -90,7 +87,7 @@
 		var msg = document.getElementById("msg").value;
 		var message = '{"type":"say", "client_name":"' + u_name + '", "data":"' + msg + '", "room_id":"room_1"}';
 		ws.send(message);
-		$("#myModal").modal('show');
+		modalShow();
 	}
 	
 	// 接收消息
@@ -114,6 +111,15 @@
 			case 'logout':
 				ws.close();
 		}
+	}
+	
+	function modalShow(){
+		$("#myModal").modal('show');
+		setTimeout(go, 3000);
+	}
+	
+	function go(){
+		location.href=""; //刷新当前页面.
 	}
 	
 	window.onload = function () {

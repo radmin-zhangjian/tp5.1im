@@ -17,7 +17,7 @@ class Start extends BaseController
 		$msg = '这是一条测试数据!';
 		$date = date('Y-m-d H:i:s', time());
 		
-		// 已进程ID和线程ID为标识推送
+		// 已进程ID和链接ID为标识推送
 		// $data = ['type' => 'event', 'uid' => $sUid, 'content' => $msg, 'time' => $date, 'to_worker_id' => 3, 'to_connection_id' => 2];
 		
 		// 已uid为标识推送
