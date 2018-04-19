@@ -2,19 +2,28 @@
 </head>
 <body>
 
-<h1 class="tit" id="liuyan"><img class="mt70 mb70" src="/static/images/1-7.png"/></h1>
-	<div class="container cf form00">
-		<div class="fl"><img src="/static/images/ll_17.jpg" alt="" style="float: right;">
-		</div>
-		<form class="center" action="" method="post" onsubmit="return false;">
-			<p>
-				<label for="">占卜：</label>
-				<textarea name="msg" id="msg" placeholder="请输入您的占卜信息" cols="30" rows="10"></textarea>
-			</p>
-			<input type="submit" value="" id="send">
-        </form>
-	</div>
+	<form class="center" action="" method="post" onsubmit="return false;">
+		<p><label for="">占卜：</label><textarea name="msg" id="msg" placeholder="请输入您的联系信息" cols="30" rows="10"></textarea></p>
+		<button type="button" class="btn" id="send">提交</button>
+	</form>
 	<p class="container">&nbsp;</p>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">提交成功</h4>
+      </div>
+    </div>
+  </div>
+</div>	
+
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+<script src="/static/js/modal.min.js"></script>
+
 
 <?php /**
 <h1>IM Work</h1>
@@ -29,7 +38,7 @@
 <button type="button" id="send">send</button>
 */?>
 
-<h4 style="text-align:center;">
+<h4 style="text-align:center;margin-top:560px;">
 	<a href="logout">退出</a>
 	{if $user_name == 'admin' && $user_id == 1}
 	<a href="user/list">管理</a>
@@ -81,6 +90,7 @@
 		var msg = document.getElementById("msg").value;
 		var message = '{"type":"say", "client_name":"' + u_name + '", "data":"' + msg + '", "room_id":"room_1"}';
 		ws.send(message);
+		$("#myModal").modal('show');
 	}
 	
 	// 接收消息

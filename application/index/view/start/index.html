@@ -1,0 +1,123 @@
+{include file='public@inc:header' /}
+</head>
+<body>
+
+<div style="display:block">
+<input type="text" id="msg">
+<button type="button" id="send">send</button>
+<div id="content"></div>
+<p style="display:none">
+<input type="button" value=" 点击 " id="trig" />
+<input type="button" value=" 循环 " id="circulation" />
+<input type="button" value=" 停止 " id="clear" />
+</p>
+</div>
+
+</body>
+
+<script type="text/javascript">
+	
+	var ws, name;
+	name = '{$user_name}';
+	
+	function connect() {
+		//ws = new WebSocket("ws://127.0.0.1:4239");
+		ws = new WebSocket("ws://123.56.192.63:4239");
+        
+		$("#send").on('click', onsend);
+        ws.onopen = onopen;
+        ws.onmessage = onmessage;
+		ws.onclose = function() {
+			console.log("连接关闭，定时重连");
+			connect();
+		};
+		ws.onerror = function() {
+			console.log("出现错误");
+		};
+	}
+	
+	// 建立连接
+	function onopen()
+	{
+		if (!name) {
+			name = prompt('输入你的名字：', '');
+			if (!name || name=='null') {  
+				name = '游客'.replace(/"/g, '\\"');
+			} else {
+				name = name.replace(/"/g, '\\"');
+			}
+		}
+		var login_data = '{"type":"login", "uid":"'+name+'", "room_id":"room_1"}';
+		console.log(login_data);
+		ws.send(login_data);
+	}
+	
+	// 发送消息
+	function onsend()
+	{
+		var u_name = name;
+		var msg = document.getElementById("msg").value;
+		//var message = '{"type":"say", "uid":"' + u_name + '", "content":"' + msg + '", "room_id":"room_1"}';
+		var message = '{"type":"say", "uid":"all", "content":"' + msg + '", "room_id":"room_1"}';
+		ws.send(message);
+	}
+	
+	// 接收消息
+	function onmessage(e)
+	{
+		var data = eval("("+e.data+")");
+		switch (data['type']) {
+			// send
+			case 'say':
+				value = '<h2>';
+				value += '[' + data['time'] + '] @' + data['uid'] + '说:<br>';
+				value += data['content'];
+				value += '</h2>';
+				$('#content').prepend(value);
+				onsound();
+				break;
+			// open
+			case 'login':
+				value = '<h2>' + data['content'] + '</h2>';
+				$('#content').prepend(value);
+				break;
+			// default
+			case 'event':
+				value = '<h2>' + data['content'] + '</h2>';
+				$('#content').prepend(value);
+				onsound();
+				break;
+		}
+	}
+	
+	// 提示音
+	function onsound() 
+	{
+		$('#chatAudio')[0].play();
+	}
+	
+	$(function(){
+	    $('<audio id="chatAudio"><source src="/static/sound/8855.mp3" type="audio/mpeg"></audio>').appendTo('body');
+	    $("#trig").on('click', onsound);
+		connect();
+	});
+	
+	
+	//循环播放
+    /*$(function(){
+        $('<audio id="chatAudio"><source src="/static/sound/8855.mp3" type="audio/mpeg"></audio>').appendTo('body');
+        var circulation;
+        //计时器
+        $("#circulation").click(function(){
+            circulation = setInterval("$('#chatAudio')[0].play()", 1000); 
+            return true; 
+        });
+        //清除计时器
+        $("#clear").click(function(){
+            clearInterval(circulation);
+        }); 
+    });*/
+	
+</script>
+
+</html>

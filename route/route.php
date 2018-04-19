@@ -27,6 +27,12 @@ Route::get('user/edit', 'index/userIm/userEdit');
 Route::post('user/update', 'index/userIm/userUpdate');
 Route::get('user/delete', 'index/userIm/userDel');
 
+Route::get('push/show', 'index/push/index');
+Route::get('push/push', 'index/push/push');
+
+Route::get('start/show', 'index/start/index');
+Route::get('start/push', 'index/start/push');
+
 return [
 
 ];
