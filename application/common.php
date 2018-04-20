@@ -88,5 +88,5 @@ function u_curl( $url, $method, $params=array(), $header='')
     $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);//获取http返回值  
     curl_close($curl);  
     $res = $data; //var_dump($res);  
-    return ['status' => $status, 'result' => $res];  
+    return ['status' => $status, 'message' => $res];  
 }
