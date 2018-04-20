@@ -21,9 +21,29 @@
 	name = '{$user_name}';
 	
 	function connect() {
-		//ws = new WebSocket("ws://127.0.0.1:4239");
-		ws = new WebSocket("ws://123.56.192.63:4239");
-        
+		var url;
+		var query = new Object();
+		query.name = name;
+		var ajax_url = '/start/link';
+		$.ajax({
+			url: ajax_url,
+			type: 'post',
+			data: query,
+			dataType: 'json',
+			async:false,
+			success: function (res) {
+				if(res.code){
+					url = res.url;
+				}else{
+					alert(res.message)
+				}
+			},
+			error:function(request, msg, e){
+				alert(msg);
+			}
+		});
+		
+		ws = new WebSocket(url);
 		$("#send").on('click', onsend);
         ws.onopen = onopen;
         ws.onmessage = onmessage;

@@ -49,4 +49,16 @@ class Start extends BaseController
 		return json($result);
     }
 	
+	public function socketUrl()
+    {
+		$result = ['code' => 0, 'message' => '获取失败', 'url' => ''];
+		
+		$request = $this->request->post();
+		if ($this->sessionInfo['user_name'] == $request['name']) {
+			// $result = ['code' => 1, 'message' => '获取成功', 'url' => 'ws://127.0.0.1:4239'];
+			$result = ['code' => 1, 'message' => '获取成功', 'url' => 'ws://123.56.192.63:4239'];
+		}
+		
+		return json($result);
+    }
 }

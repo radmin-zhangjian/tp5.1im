@@ -32,6 +32,7 @@ Route::get('push/push', 'index/push/push');
 
 Route::get('start/show', 'index/start/index');
 Route::get('start/push', 'index/start/push');
+Route::post('start/link', 'index/start/socketUrl');
 
 return [
 
